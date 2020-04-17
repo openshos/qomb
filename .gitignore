@@ -6,6 +6,7 @@
 *.ko
 *.obj
 *.elf
+*.bin
 
 # Linker output
 *.ilk
@@ -35,6 +36,7 @@
 *.i*86
 *.x86_64
 *.hex
+*out
 
 # Debug files
 *.dSYM/
@@ -50,3 +52,42 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+build/
+*build/
+*/build/
+
+dist/
+*dist/
+*/dist/
+
+# CMake
+*/CMakeFiles/
+*CMakeCache.txt
+*CMakeFiles/
+*.vcx*
+*.sln
+*CMakeCache*
+*.cmake
+*Makefile*
+
+# IDE Folders
+*.vscode/
+*.vs/
+
+# Others
+*.tmp
+*/expand
+*expand.*
+*installscripts/include*
+*result.txt
+*.swb
+*.swp
+*.swo
+
+*.xml
+*.tap
+*.tmp
+
+out
+*/dist*
