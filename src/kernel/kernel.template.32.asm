@@ -7,7 +7,7 @@ section		.text
     dd		- (0x1BADB002+0x00)
 
 global	start
-extern kmain						; the entry function kmain in the kernel.c 
+extern kmain						; the entry function kmain in the object file
 start:
         cli							; clear the interrupts
         call kmain					; instruct processor to continue execution from kmain function in c code

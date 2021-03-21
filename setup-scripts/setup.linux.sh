@@ -1,13 +1,23 @@
 #!/bin/bash
 
+# This script helps download the required packages required to compile 
+# the source file in the supported programming languages and build 
+# the operating system. The following programming languages are currently 
+# supported by QOMB 
+# - C
+# - C++
+# - Rust
+# - Go
 # 
-# 
-# 
+# Optionally you can install supplementary packages to convert the bin
+# file into .iso and visualbox package to install the OS.
 # 
 # License: MIT
 # Author: Adewale Azeez <azeezadewale98@gmail.com>
 
 # with execution scripts check for qemu name e.g. qemu, qemu-system-i386 e.t.c.
+# should send the build.linx.sh as qomb-build and run.linux.sh as qomb-run to the 
+# system path 
 
 ARG=
 YEAR=2021
@@ -15,8 +25,8 @@ ARG_MATCH=
 LOUD=false
 LICENSE=MIT
 VERSION=v1.0
-AUTHOR="Adewale Azeez"
 EXTRACTED_ARG_VALUE=
+AUTHOR="Adewale Azeez"
 INSTALL_SUPPLEMENTARY=false
 SELECTED_PROGRAMMING_LANGUAGES=()
 SUPPORTED_PROGRAMMING_LANGUAGES=(
@@ -76,6 +86,7 @@ match_and_extract_argument() {
     EXTRACTED_ARG_VALUE=${ARG#*=}
 }
 
+# Update the apt-get repositories url
 update_apt()
 {
     echo -n "Updating apt-get repositories..."
