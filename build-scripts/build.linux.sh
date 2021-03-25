@@ -36,6 +36,7 @@ SUPPORTED_ARCHITECTURES=(
     x86_x64
 )
 QEMU_COMMAND=qemu-system-i386
+RUST_FLAGS="--target i686-unknown-linux-gnu"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 main()
@@ -114,12 +115,14 @@ process_arch_for_flags()
         LINKER_ARCH_FLAG=elf_i386
         NASM_FLAGS=elf32
         QEMU_COMMAND=qemu-system-i386
+        RUST_FLAGS="--target i686-unknown-linux-gnu"
 
     elif [[ "(x64 amd64 x86_64 x86_x64)" =~ $ARCH ]]; then
         GCC_FLAGS=-m64
         LINKER_ARCH_FLAG=elf_x64
         NASM_FLAGS=elf64
         QEMU_COMMAND=qemu-system-x64
+        RUST_FLAGS=-"-target x86_64-linux-kernel"
 
     fi
 }
@@ -140,8 +143,8 @@ compile_source_files()
         FILE_NAME=${SOURCE_FILE##*/}
         FILE_NAME=${FILE_NAME##*\\}
         FILE_NAME=${FILE_NAME%.*}
-        FILE_OBJECT_NAME=$FILE_NAME.o
         FILE_EXT=${SOURCE_FILE##*.}
+        FILE_OBJECT_NAME=$FILE_NAME.$FILE_EXT.o
         echo "compiling $SOURCE_FILE..."
         if [[ "$FILE_EXT" == "asm" ]]; then
             if [[ "$LOUD" == "false" ]]; then
@@ -157,8 +160,8 @@ compile_source_files()
             fi
         elif [[ "$FILE_EXT" == "cpp" ]]; then
             fail_with_message "to compile C++ file $SOURCE_FILE to object file"
-        elif [[ "$FILE_EXT" == "rust" ]]; then
-            fail_with_message "to compile Rust file $SOURCE_FILE to object file"
+        elif [[ "$FILE_EXT" == "rs" ]]; then
+            rustc -O $RUST_FLAGS --emit obj -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME --crate-type lib $SOURCE_FILE
         elif [[ "$FILE_EXT" == "go" ]]; then
             fail_with_message "to compile GO file $SOURCE_FILE to object file"
         else

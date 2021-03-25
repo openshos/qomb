@@ -91,10 +91,12 @@ update_apt()
 {
     echo -n "Updating apt-get repositories..."
     if [[ "$LOUD" == "false" ]]; then
-        sudo apt-get update > /dev/null
+        apt-get -y update > /dev/null
+        apt-get -y --fix-broken install > /dev/null
         echo "done"
     else
-        sudo apt-get update
+        apt-get update
+        apt-get -y --fix-broken install
     fi
 }
 
@@ -106,12 +108,14 @@ install_essential_packages()
 {
     echo "installing the essential packages"
     if [[ "$LOUD" == "false" ]]; then
-        sudo apt-get install -y nasm > /dev/null
-        sudo apt-get install -y qemu qemu-system > /dev/null
-        echo "nasm, qemu, qemu-system...done"
+        apt-get install -y nasm > /dev/null
+        apt-get install -y build-essential > /dev/null
+        apt-get install -y qemu qemu-system > /dev/null
+        echo "nasm, build-essential, qemu, qemu-system...done"
     else
-        sudo apt-get install -y nasm
-        sudo apt-get install -y qemu qemu-system
+        apt-get install -y nasm
+        apt-get install -y build-essential
+        apt-get install -y qemu qemu-system
     fi
 }
 
@@ -123,10 +127,10 @@ install_c_cpp_packages()
 {
     echo "installing the c and c++ packages"
     if [[ "$LOUD" == "false" ]]; then
-        sudo apt-get install -y gcc > /dev/null
+        apt-get install -y gcc > /dev/null
         echo "gcc...done"
     else
-        sudo apt-get install -y gcc
+        apt-get install -y gcc
     fi
 }
 
@@ -137,15 +141,29 @@ install_c_cpp_packages()
 install_rust_packages()
 {
     echo "installing the rust packages"
+    if [[ "$LOUD" == "false" ]]; then
+        curl https://sh.rustup.rs -sSf | sh > /dev/null
+        echo "rustc...done"
+    else
+        curl https://sh.rustup.rs -sSf | sh
+    fi
+    source $HOME/.cargo/env
+    rustup target install i686-unknown-linux-gnu
 }
 
-# Install the GO packages neccasary to compile the GO
+# Install the Go packages neccasary to compile the Go
 # source code into object file to be linked with the kernel.asm 
 # object file. Add the option --lang=go to install 
 # these packages
-install_rust_packages()
+install_go_packages()
 {
     echo "installing the go packages"
+    if [[ "$LOUD" == "false" ]]; then
+        apt-get install -y golang-go > /dev/null
+        echo "golang-go...done"
+    else
+        apt-get install -y golang-go
+    fi
 }
 
 # Install supplement packages that are not crucial to the environment but 
@@ -160,12 +178,12 @@ install_supplement_packages()
 {
     echo "installing the supplementary packages"
     if [[ "$LOUD" == "false" ]]; then
-        sudo apt-get install -y virtualbox > /dev/null
-        sudo apt-get install -y grub > /dev/null
+        apt-get install -y virtualbox > /dev/null
+        apt-get install -y grub > /dev/null
         echo "virtualbox, grub...done"
     else
-        sudo apt-get install -y virtualbox
-        sudo apt-get install -y grub
+        apt-get install -y virtualbox
+        apt-get install -y grub
     fi
 }
 
