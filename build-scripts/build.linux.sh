@@ -119,9 +119,9 @@ process_arch_for_flags()
 
     elif [[ "(x64 amd64 x86_64 x86_x64)" =~ $ARCH ]]; then
         GCC_FLAGS=-m64
-        LINKER_ARCH_FLAG=elf_x64
+        LINKER_ARCH_FLAG=elf_x86_64
         NASM_FLAGS=elf64
-        QEMU_COMMAND=qemu-system-x64
+        QEMU_COMMAND=qemu-system-x86_64
         RUST_FLAGS=-"-target x86_64-linux-kernel"
 
     fi
@@ -154,9 +154,9 @@ compile_source_files()
             fi
         elif [[ "$FILE_EXT" == "c" ]]; then
             if [[ "$LOUD" == "false" ]]; then
-                gcc $GCC_FLAGS -c $SOURCE_FILE -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME > /dev/null
+                gcc $GCC_FLAGS -ffreestanding -nostdlib -c $SOURCE_FILE -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME > /dev/null
             else
-                gcc $GCC_FLAGS -c $SOURCE_FILE -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME
+                gcc $GCC_FLAGS -ffreestanding -nostdlib -c $SOURCE_FILE -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME
             fi
         elif [[ "$FILE_EXT" == "cpp" ]]; then
             fail_with_message "to compile C++ file $SOURCE_FILE to object file"
@@ -221,9 +221,9 @@ create_linker_file()
         echo "generate linker file"
         LINKER_FILE=
         if [[ "(x86 i386)" =~ $ARCH ]]; then
-            LINKER_FILE=linker.template.32.ld
+            LINKER_FILE=linker.template.ld
         elif [[ "(x64 amd64 x86_64 x86_x64)" =~ $ARCH ]]; then
-            LINKER_FILE=linker.template.64.ld
+            LINKER_FILE=linker.template.ld
         fi
         if [ -f "$SCRIPT_DIR/../src/linker/$LINKER_FILE" ]; then
             LINKER_FILE="$SCRIPT_DIR/../src/linker/$LINKER_FILE"
