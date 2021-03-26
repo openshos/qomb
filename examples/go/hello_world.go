@@ -1,0 +1,5 @@
+package kernel;
+
+func kmain() {
+
+}

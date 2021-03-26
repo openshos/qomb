@@ -36,6 +36,7 @@ SUPPORTED_ARCHITECTURES=(
     x86_x64
 )
 QEMU_COMMAND=qemu-system-i386
+GO_FLAGS="GOOS=linux GOARCH=386"
 RUST_FLAGS="--target i686-unknown-linux-gnu"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
@@ -114,6 +115,7 @@ process_arch_for_flags()
         GCC_FLAGS=-m32
         LINKER_ARCH_FLAG=elf_i386
         NASM_FLAGS=elf32
+        GO_FLAGS="GOOS=linux GOARCH=386"
         QEMU_COMMAND=qemu-system-i386
         RUST_FLAGS="--target i686-unknown-linux-gnu"
 
@@ -122,6 +124,7 @@ process_arch_for_flags()
         LINKER_ARCH_FLAG=elf_x86_64
         NASM_FLAGS=elf64
         QEMU_COMMAND=qemu-system-x86_64
+        GO_FLAGS="GOOS=linux GOARCH=amd64"
         RUST_FLAGS=-"-target x86_64-linux-kernel"
 
     fi
@@ -159,11 +162,23 @@ compile_source_files()
                 gcc $GCC_FLAGS -ffreestanding -nostdlib -c $SOURCE_FILE -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME
             fi
         elif [[ "$FILE_EXT" == "cpp" ]]; then
-            fail_with_message "to compile C++ file $SOURCE_FILE to object file"
+            if [[ "$LOUD" == "false" ]]; then
+                g++ $GCC_FLAGS -ffreestanding -nostdlib -c $SOURCE_FILE -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME > /dev/null
+            else
+                g++ $GCC_FLAGS -ffreestanding -nostdlib -c $SOURCE_FILE -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME
+            fi
         elif [[ "$FILE_EXT" == "rs" ]]; then
-            rustc -O $RUST_FLAGS --emit obj -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME --crate-type lib $SOURCE_FILE
+            if [[ "$LOUD" == "false" ]]; then
+                rustc -O $RUST_FLAGS --emit obj -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME --crate-type lib $SOURCE_FILE > /dev/null
+            else
+                rustc -O $RUST_FLAGS --emit obj -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME --crate-type lib $SOURCE_FILE
+            fi
         elif [[ "$FILE_EXT" == "go" ]]; then
-            fail_with_message "to compile GO file $SOURCE_FILE to object file"
+            if [[ "$LOUD" == "false" ]]; then
+                export $GO_FLAGS; go tool compile -l -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME $SOURCE_FILE
+            else
+                export $GO_FLAGS; go tool compile -o $OUTPUT_DIRECTORY/objfiles/$FILE_OBJECT_NAME $SOURCE_FILE
+            fi
         else
             fail_with_message "Unknow source file '$SOURCE_FILE'"
         fi
